@@ -1,511 +1,850 @@
-
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAÚDE+ PRO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriBoom - Transformação e Saúde</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
-        :root {
-            --primary: #00e5ff;
-            --bg-dark: #0a0e14;
-            --card-bg: #151a22;
-        }
-
+        /* Estilos Base */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-dark);
+            background: linear-gradient(to bottom right, #000000, #1a1a1a, #0000ff);
             color: white;
+            font-family: "Roboto", sans-serif;
             margin: 0;
-            overflow: hidden;
-            width: 100vw;
-            height: 100vh;
+            padding: 0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
-        #app-container {
-            width: 100%;
-            height: 100%;
-            position: relative;
-        }
-
-        .screen {
-            display: none;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            padding: 24px;
-            padding-bottom: 140px;
+        /* Utilidades de Navegação */
+        .page-section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
             box-sizing: border-box;
-            background: var(--bg-dark);
         }
 
-        .screen.active {
-            display: block;
-            z-index: 50;
-            animation: fadeIn 0.2s ease-out;
-        }
+        .hidden { display: none !important; }
 
-        .glass-card {
-            background: #151a22;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            overflow: hidden;
-        }
-
-        .btn-gradient {
-            background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
-            color: #000;
-            font-weight: 800;
-            border-radius: 14px;
-            padding: 18px;
-            width: 100%;
+        /* Título Principal Estilizado */
+        .titulo-site {
+            font-family: Impact, sans-serif;
+            font-size: 5rem;
+            text-align: center;
+            margin: 0;
+            letter-spacing: 4px;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s;
-            cursor: pointer;
+        }
+        .nutri { color: white; }
+        .boom { color: blue; text-shadow: 0 0 20px rgba(0, 0, 255, 0.6); }
+
+        /* Estilo Hero (Página Inicial) */
+        .hero-content {
+            max-width: 800px;
+            text-align: center;
+        }
+        .hero-content h2 {
+            font-size: 2.5rem;
+            font-family: Impact, sans-serif;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .hero-content p {
+            font-size: 1.15rem;
+            margin: 20px 0 40px;
+            opacity: 0.9;
+            line-height: 1.8;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .btn-principal {
+            background: blue;
+            color: white;
             border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 18px 45px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 255, 0.4);
+        }
+        .btn-principal:hover {
+            transform: scale(1.05);
+            background: #1a1aff;
+            box-shadow: 0 8px 25px rgba(0, 0, 255, 0.6);
         }
 
-        .btn-gradient:active { transform: scale(0.96); opacity: 0.9; }
-
-        .nav-bar {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 92%;
-            max-width: 500px;
-            background: rgba(21, 26, 34, 0.98);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            display: flex;
-            justify-content: space-around;
-            padding: 12px 5px;
+        /* Seção de Avaliação (Página 2) */
+        .container-avaliacao {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 40px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 650px;
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 9999;
+        }
+        .container-avaliacao h2 {
+            font-family: Impact, sans-serif;
+            color: blue;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
         }
 
-        .nav-item { color: #5c6370; text-align: center; cursor: pointer; flex: 1; }
-        .nav-item.active { color: var(--primary); }
-        .nav-item i { font-size: 18px; display: block; margin-bottom: 4px; }
-        .nav-item span { font-size: 8px; font-weight: 800; text-transform: uppercase; }
-
-        .objective-card {
-            background: #151a22;
+        .input-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 8px;
             border: 2px solid transparent;
-            border-radius: 16px;
+            background: #222;
+            color: white;
+            font-size: 1rem;
+            transition: border 0.3s;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus, textarea:focus { border-color: blue; outline: none; }
+
+        .resultado-box {
+            margin-top: 25px;
             padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            cursor: pointer;
-        }
-        .objective-card.selected {
-            border-color: var(--primary);
-            background: rgba(0, 229, 255, 0.05);
-        }
-
-        input {
-            background: #1c232d !important;
-            border: 1px solid #2d3643 !important;
-            border-radius: 12px;
-            color: white !important;
-            padding: 14px;
-            width: 100%;
-            outline: none;
-            font-size: 14px;
-        }
-
-        /* Modal */
-        #custom-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 10000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .img-preview {
-            width: 100%;
-            height: 120px;
-            border: 2px dashed #2d3643;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 15px;
-            background-size: cover;
-            background-position: center;
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .item-img {
-            width: 60px;
-            height: 60px;
+            background: rgba(0, 0, 255, 0.15);
+            border: 1px solid blue;
             border-radius: 10px;
-            object-fit: cover;
-            background: #1c232d;
+            text-align: center;
+        }
+        
+        #txtIMC {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: white;
+            line-height: 1.4;
         }
 
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* Estilos da Tabela IMC */
+        .tabela-wrapper {
+            margin-top: 30px;
+            width: 100%;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            background: rgba(0,0,0,0.3);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        th { background: blue; color: white; font-family: Impact; letter-spacing: 1px; }
+        .row-highlight { background: rgba(0, 200, 255, 0.6) !important; font-weight: bold; outline: 2px solid white; }
+
+        .info-educativa {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            text-align: justify;
+            color: #ccc;
+        }
+
+        /* Seção final de Recomendações */
+        .bloco {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            width: 100%;
+        }
+        .bloco h3 { color: blue; font-family: Impact; font-size: 1.8rem; margin-top: 0; }
+        ul { list-style: none; padding: 0; }
+        li {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+        li:hover { background: rgba(0, 0, 255, 0.3); }
+
+        /* Estilos para os Cards de Opções */
+        .opcoes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 20px;
+        }
+        .card-opcao {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s, background 0.3s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card-opcao:hover {
+            transform: translateY(-10px);
+            background: rgba(0, 0, 255, 0.2);
+            border-color: blue;
+        }
+        .card-opcao h4 {
+            font-family: Impact, sans-serif;
+            font-size: 1.8rem;
+            margin: 0 0 15px 0;
+            color: blue;
+        }
+        .card-opcao p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+
+        /* --- DASHBOARD AMPLO COM ÍCONES --- */
+        .dashboard-container {
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 20px;
+        }
+
+        /* Menu de Ícones */
+        .menu-icones {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .btn-icone {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+            min-width: 100px;
+        }
+        .btn-icone.ativo {
+            background: blue;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 0, 255, 0.5);
+        }
+        .btn-icone span { font-size: 1.5rem; }
+        .btn-icone label { margin: 0; cursor: pointer; font-size: 0.8rem; text-transform: uppercase; font-family: Impact; letter-spacing: 1px; }
+
+        /* Área de Conteúdo das Subpáginas */
+        .sub-pagina {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 100%;
+            box-sizing: border-box;
+            animation: fadeIn 0.4s ease-out;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card-registro {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .card-registro h4 {
+            font-family: Impact;
+            color: blue;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .lista-logs {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
+            padding-right: 10px;
+        }
+        .log-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid blue;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .img-prato {
+            width: 100%;
+            max-height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Widget de Calorias */
+        .caloria-widget {
+            text-align: center;
+            padding: 20px;
+        }
+        .circulo-calorias {
+            width: 180px;
+            height: 180px;
+            border: 10px solid blue;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 30px;
+            box-shadow: 0 0 20px rgba(0, 0, 255, 0.3);
+        }
+        .circulo-calorias span { font-size: 2.5rem; font-family: Impact; }
+        .circulo-calorias small { opacity: 0.7; }
+
+        /* --- ESTILO CONTROLE DE ÁGUA (YAZIO STYLE) --- */
+        .water-container {
+            margin-top: 40px;
+            text-align: center;
+            background: rgba(0, 0, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        .water-container h5 {
+            font-family: Impact;
+            font-size: 1.4rem;
+            margin: 0 0 10px 0;
+            color: #00ffff;
+        }
+        .water-info {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        .copinhos-grid {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .copinho {
+            width: 25px; 
+            height: 35px;
+            cursor: pointer;
+            transition: transform 0.2s, filter 0.3s;
+            filter: grayscale(1) opacity(0.3);
+        }
+        .copinho.cheio {
+            filter: grayscale(0) opacity(1) drop-shadow(0 0 5px #00ffff);
+            transform: scale(1.1);
+        }
+        .copinho:hover {
+            transform: translateY(-5px);
+        }
+
+        @media (max-width: 600px) {
+            .titulo-site { font-size: 3.5rem; }
+            .menu-icones { gap: 10px; }
+            .btn-icone { padding: 10px; min-width: 80px; }
+        }
     </style>
 </head>
 <body>
 
-    <div id="app-container">
+    <!-- PÁGINA 1: HOME / HERO -->
+    <section id="home" class="page-section">
+        <div class="hero-content">
+            <h1 class="titulo-site">
+                <span class="nutri">NUTRI</span><span class="boom">BOOM</span>
+            </h1>
+            
+            <h2>Seja bem-vindo à Nutriboom!</h2>
+            
+            <p>
+                Aqui, vamos te ajudar a conhecer melhor o seu corpo e desenvolver hábitos alimentares que realmente se adaptam a você. 
+                Nosso objetivo é transformar sua relação com a comida de forma prática, saudável e personalizada.
+            </p>
+
+            <div class="input-group" style="max-width: 400px; margin: 0 auto 30px;">
+                <label for="nomeUsuario">Para começarmos, qual é o seu nome?</label>
+                <input id="nomeUsuario" type="text" placeholder="Digite o seu nome aqui">
+            </div>
+            
+            <button class="btn-principal" onclick="validarInicio()">Começar Agora</button>
+        </div>
+    </section>
+
+    <!-- PÁGINA 2: AVALIAÇÃO (IMC) -->
+    <section id="avaliacao" class="page-section hidden">
+        <div class="container-avaliacao">
+            <h2 id="tituloAvaliacao">Sua Avaliação</h2>
+            
+            <div class="input-group">
+                <label>Peso Atual (kg)</label>
+                <input id="peso" type="text" placeholder="Ex: 75.5">
+            </div>
+            
+            <div class="input-group">
+                <label>Altura (m ou cm)</label>
+                <input id="altura" type="text" placeholder="Ex: 1.75 ou 175">
+            </div>
+
+            <button class="btn-principal" style="width: 100%;" onclick="processarIMC()">Calcular Meu IMC</button>
+            
+            <!-- Resultado e Tabela -->
+            <div id="boxResultado" class="resultado-box hidden">
+                <div id="txtIMC"></div>
+                
+                <div class="tabela-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>IMC</th>
+                                <th>Classificação</th>
+                                <th>Riscos</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabela">
+                            <tr id="faixa-1"><td>Menor que 18,5</td><td>Abaixo do peso</td><td>Fadiga, queda de cabelo</td></tr>
+                            <tr id="faixa-2"><td>18,5 - 24,9</td><td>Peso Normal</td><td>Saúde em equilíbrio</td></tr>
+                            <tr id="faixa-3"><td>25,0 - 29,9</td><td>Sobrepeso</td><td>Fadiga, circulação</td></tr>
+                            <tr id="faixa-4"><td>30,0 - 34,9</td><td>Obesidade Grau I</td><td>Diabetes, hipertensão</td></tr>
+                            <tr id="faixa-5"><td>35,0 - 39,9</td><td>Obesidade Grau II</td><td>Apneia, refluxo</td></tr>
+                            <tr id="faixa-6"><td>Maior que 40</td><td>Obesidade Grau III</td><td>Infarto, AVC</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="info-educativa">
+                    <strong>Para que serve o IMC?</strong><br>
+                    O IMC é o padrão internacional para avaliar se o seu peso está adequado à sua altura. 
+                    Estar fora da faixa normal indica que você pode precisar de ajustes na dieta e rotina para prevenir doenças.
+                </div>
+
+                <button class="btn-principal" style="font-size: 1rem; padding: 12px 25px; margin-top: 20px;" onclick="navegar('objetivos')">Prosseguir para Objetivos</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- PÁGINA 3: OBJETIVOS -->
+    <section id="objetivos" class="page-section hidden">
+        <h2 class="titulo-site" style="font-size: 2.5rem; margin-bottom: 30px;">
+            Escolha seu <span class="boom">Foco</span>
+        </h2>
         
-        <!-- 1. ECRÃ INICIAL -->
-        <div id="screen-welcome" class="screen active flex flex-col justify-center">
-            <div class="text-center mb-12">
-                <div class="w-20 h-20 bg-slate-800 rounded-3xl mx-auto flex items-center justify-center mb-6 shadow-2xl">
-                    <i class="fas fa-heart-pulse text-3xl text-cyan-400"></i>
-                </div>
-                <h1 class="text-4xl font-black tracking-tighter italic">SAÚDE+ <span class="text-cyan-400">PRO</span></h1>
-                <p class="text-slate-400 mt-2 font-medium italic">SISTEMA OPERATIVO BIOHACKER</p>
-            </div>
-            <button onclick="navigate('screen-goal')" class="btn-gradient">Entrar no Sistema</button>
-        </div>
+        <p id="msgObjetivo" style="margin-bottom: 20px; text-align: center;"></p>
 
-        <!-- 2. ECRÃ OBJETIVO -->
-        <div id="screen-goal" class="screen">
-            <h2 class="text-2xl font-black mb-8 italic mt-4 uppercase tracking-tighter">Protocolo</h2>
-            <div class="space-y-4">
-                <div class="objective-card" onclick="selectGoal(this, 'perder')">
-                    <i class="fas fa-fire text-orange-500 text-xl"></i>
-                    <div><p class="font-bold">Definição (Cutting)</p><p class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Défice Calórico</p></div>
+        <!-- Container de Cards de Opções -->
+        <div class="opcoes-container">
+            <div class="card-opcao" onclick="finalizarObjetivo('massa')">
+                <div>
+                    <h4>Ganho de peso</h4>
+                    <p>Ajude seu corpo a ganhar massa de forma saudável, com alimentação balanceada e adaptada ao seu ritmo.</p>
                 </div>
-                <div class="objective-card" onclick="selectGoal(this, 'ganhar')">
-                    <i class="fas fa-dumbbell text-emerald-500 text-xl"></i>
-                    <div><p class="font-bold">Massa (Bulking)</p><p class="text-[10px] text-slate-500 uppercase font-black tracking-widest">Hipertrofia Muscular</p></div>
-                </div>
-            </div>
-            <button onclick="navigate('screen-setup')" class="btn-gradient mt-12">Confirmar</button>
-        </div>
-
-        <!-- 3. ECRÃ DADOS -->
-        <div id="screen-setup" class="screen">
-            <h2 class="text-2xl font-black mb-8 italic mt-4 uppercase text-cyan-400">Biometria</h2>
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div><label class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Peso (kg)</label>
-                <input type="number" id="weight" value="80" oninput="calcIMC()"></div>
-                <div><label class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Altura (cm)</label>
-                <input type="number" id="height" value="175" oninput="calcIMC()"></div>
-            </div>
-            <div class="glass-card p-8 text-center mb-10">
-                <p class="text-[10px] font-black text-slate-500 uppercase mb-2">Índice de Massa Corporal</p>
-                <h3 id="imc-val" class="text-6xl font-black text-white">26.1</h3>
-                <p id="imc-status" class="text-[10px] text-cyan-400 font-black mt-2 uppercase tracking-widest">A analisar...</p>
-            </div>
-            <button onclick="finishSetup()" class="btn-gradient">Gerar Painel</button>
-        </div>
-
-        <!-- 4. PAINEL CENTRAL (DASHBOARD) -->
-        <div id="screen-home" class="screen">
-            <div class="flex justify-between items-center mb-8 mt-4">
-                <h2 class="text-2xl font-black italic">CENTRAL</h2>
-                <div class="text-right">
-                    <p class="text-[10px] font-bold text-slate-500 uppercase">Estado: <span class="text-emerald-500">Online</span></p>
-                </div>
+                <button class="btn-principal" style="padding: 10px 20px; font-size: 0.9rem;">Selecionar</button>
             </div>
 
-            <div class="grid grid-cols-2 gap-4 mb-6">
-                <div class="glass-card p-4 border-l-2 border-cyan-400">
-                    <p class="text-[9px] font-black text-slate-500 uppercase">IMC Atual</p>
-                    <h4 id="dash-imc" class="text-xl font-black">26.1</h4>
+            <div class="card-opcao" onclick="finalizarObjetivo('perda')">
+                <div>
+                    <h4>Perda de peso</h4>
+                    <p>Conquiste seus objetivos de forma segura, aprendendo hábitos alimentares que realmente funcionam para você.</p>
                 </div>
-                <div class="glass-card p-4 border-l-2 border-emerald-400">
-                    <p class="text-[9px] font-black text-slate-500 uppercase">Investimento</p>
-                    <h4 id="dash-money" class="text-xl font-black text-emerald-400">0,00 €</h4>
-                </div>
+                <button class="btn-principal" style="padding: 10px 20px; font-size: 0.9rem;">Selecionar</button>
             </div>
 
-            <div class="glass-card p-6 mb-6">
-                <div class="flex justify-between items-center mb-4">
-                    <p class="text-[10px] font-black text-slate-500 uppercase italic">Energia Diária</p>
-                    <span id="kcal-perc-text" class="text-[8px] bg-cyan-500/10 text-cyan-400 font-black px-2 py-1 rounded">0%</span>
+            <div class="card-opcao" onclick="finalizarObjetivo('equilibrio')">
+                <div>
+                    <h4>Manter peso</h4>
+                    <p>Mantenha seu equilíbrio e bem-estar, com escolhas alimentares que se encaixam no seu dia a dia.</p>
                 </div>
-                <div class="flex items-end gap-2 mb-4">
-                    <h3 id="dash-consumed" class="text-5xl font-black text-white">0</h3>
-                    <span class="text-slate-500 text-sm font-bold mb-1">/ <span id="dash-limit">1800</span> KCAL</span>
-                </div>
-                <div class="w-full h-3 bg-slate-800/50 rounded-full overflow-hidden">
-                    <div id="progress-kcal" class="h-full bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-1000" style="width: 0%"></div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
-                <div class="glass-card p-6 flex flex-col items-center gap-3" onclick="navigate('screen-diet')">
-                    <i class="fas fa-utensils text-orange-400 text-xl"></i>
-                    <p class="text-[10px] font-black uppercase tracking-widest">Dieta</p>
-                </div>
-                <div class="glass-card p-6 flex flex-col items-center gap-3" onclick="navigate('screen-workout')">
-                    <i class="fas fa-bolt text-purple-400 text-xl"></i>
-                    <p class="text-[10px] font-black uppercase tracking-widest">Treino</p>
-                </div>
+                <button class="btn-principal" style="padding: 10px 20px; font-size: 0.9rem;">Selecionar</button>
             </div>
         </div>
+    </section>
 
-        <!-- 5. ECRÃ FINANCEIRO -->
-        <div id="screen-reais" class="screen">
-            <h2 class="text-2xl font-black mb-8 italic mt-4 text-emerald-400 uppercase text-center">Gestão Financeira</h2>
-            <div class="glass-card p-8 border-l-4 border-emerald-500 mb-8 bg-emerald-500/5 text-center">
-                <p class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Custo de Vida Saudável (Mês)</p>
-                <h1 id="reais-total-display" class="text-5xl font-black text-emerald-400 mt-2">0,00 €</h1>
-                <p class="text-[11px] text-slate-400 mt-6 italic font-medium">"este é o meu investimento em saúde este mês"</p>
-            </div>
+    <!-- PÁGINA 4: DASHBOARD AMPLO -->
+    <section id="dashboard" class="page-section hidden" style="justify-content: flex-start; padding-top: 60px;">
+        <h2 class="titulo-site" style="font-size: 3rem;">DASHBOARD <span class="boom">BOOM</span></h2>
+        <p id="boasVindasDash" style="text-align: center; margin-bottom: 30px;"></p>
+
+        <div class="dashboard-container">
             
-            <div class="space-y-6">
-                <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Mensalidade Ginásio</label>
-                    <input type="number" id="gym-val" value="0" oninput="updateFinance()">
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Mercado e Dieta</label>
-                    <input type="number" id="diet-val" value="0" oninput="updateFinance()">
+            <!-- Menu de Ícones (Abas) -->
+            <div class="menu-icones">
+                <button class="btn-icone ativo" onclick="abrirSubPagina('principal', this)">
+                    <span>🔥</span>
+                    <label>Resumo</label>
+                </button>
+                <button class="btn-icone" onclick="abrirSubPagina('aba-alimentos', this)">
+                    <span>🍽️</span>
+                    <label>Dieta</label>
+                </button>
+                <button class="btn-icone" onclick="abrirSubPagina('aba-exercicios', this)">
+                    <span>💪</span>
+                    <label>Treino</label>
+                </button>
+                <button class="btn-icone" onclick="abrirSubPagina('aba-sugestoes', this)">
+                    <span>💡</span>
+                    <label>Sugestões</label>
+                </button>
+            </div>
+
+            <!-- SUBPÁGINA: RESUMO (Principal) -->
+            <div id="principal" class="sub-pagina">
+                <div class="caloria-widget">
+                    <h4 style="font-family: Impact; color: blue; font-size: 2rem; margin-top: 0;">Controle Diário</h4>
+                    <div class="circulo-calorias">
+                        <small>Consumidas</small>
+                        <span id="valorCalorias">0</span>
+                        <small>kcal</small>
+                    </div>
+                    
+                    <!-- CONTROLE DE ÁGUA -->
+                    <div class="water-container">
+                        <h5>Hidratação Diária</h5>
+                        <div class="water-info">
+                            <span id="txtMetaAgua">Meta: 0ml</span> | 
+                            <span style="color:#00ffff" id="txtAguaAtual">0ml consumidos</span>
+                        </div>
+                        <div id="gridCopinhos" class="copinhos-grid">
+                            <!-- Copinhos gerados via JS -->
+                        </div>
+                        <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 10px;">Clique nos copinhos (250ml cada) para registrar</p>
+                    </div>
                 </div>
             </div>
+
+            <!-- SUBPÁGINA: REGISTRO DE ALIMENTAÇÃO -->
+            <div id="aba-alimentos" class="sub-pagina hidden">
+                <div class="card-registro">
+                    <h4>Registro de Alimentos</h4>
+                    <div class="input-group">
+                        <label>O que você consumiu?</label>
+                        <input type="text" id="inputAlimento" placeholder="Ex: Arroz, feijão e frango">
+                    </div>
+                    <div class="input-group">
+                        <label>Calorias Estimadas (opcional)</label>
+                        <input type="number" id="inputCalItem" placeholder="Ex: 450">
+                    </div>
+                    <div class="input-group">
+                        <label>Foto do Prato (opcional)</label>
+                        <input type="file" id="inputFotoPrato" accept="image/*">
+                    </div>
+                    <button class="btn-principal" style="width: 100%; padding: 15px;" onclick="registrarItem('Alimento')">Salvar na Dieta</button>
+                    <div id="logAlimentos" class="lista-logs"></div>
+                </div>
+            </div>
+
+            <!-- SUBPÁGINA: EXERCÍCIOS -->
+            <div id="aba-exercicios" class="sub-pagina hidden">
+                <div class="card-registro">
+                    <h4>Registro de Exercícios</h4>
+                    <div class="input-group">
+                        <label>Atividade realizada</label>
+                        <input type="text" id="inputTreino" placeholder="Ex: Corrida 30min ou Musculação">
+                    </div>
+                    <button class="btn-principal" style="width: 100%; padding: 15px;" onclick="registrarItem('Treino')">Salvar Treino</button>
+                    <div id="logTreinos" class="lista-logs"></div>
+                </div>
+            </div>
+
+            <!-- SUBPÁGINA: SUGESTÕES -->
+            <div id="aba-sugestoes" class="sub-pagina hidden">
+                <div class="card-registro">
+                    <h4 id="tituloRecomendacao">Sugestões Personalizadas</h4>
+                    <div class="bloco" style="background: rgba(255,255,255,0.05); margin-top: 0;">
+                        <p style="color: #00ffff; font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">🛡️ Estratégia de Treino:</p>
+                        <ul id="lista-treinos"></ul>
+                    </div>
+                    <div class="bloco" style="background: rgba(255,255,255,0.05);">
+                        <p style="color: #00ffff; font-weight: bold; font-size: 1.1rem; margin-bottom: 10px;">🍎 Pilar Nutricional:</p>
+                        <ul id="lista-comidas"></ul>
+                    </div>
+                </div>
+            </div>
+
         </div>
 
-        <!-- 6. ECRÃ DIETA -->
-        <div id="screen-diet" class="screen">
-            <h2 class="text-2xl font-black mb-8 italic mt-4 uppercase text-orange-400 text-center">Alimentação</h2>
-            <div class="btn-gradient mb-8" onclick="showAddModal('refeição')">
-                <i class="fas fa-camera mr-2"></i> Registar Refeição
-            </div>
-            <div id="refeicoes-list" class="space-y-4"></div>
-        </div>
-
-        <!-- 7. ECRÃ TREINOS -->
-        <div id="screen-workout" class="screen">
-            <h2 class="text-2xl font-black mb-8 italic mt-4 uppercase text-purple-400 text-center">Performance</h2>
-            <div class="btn-gradient mb-8" style="background: linear-gradient(90deg, #a855f7 0%, #7e22ce 100%);" onclick="showAddModal('treino')">
-                <i class="fas fa-running mr-2 text-white"></i> <span class="text-white uppercase font-black">Registar Treino</span>
-            </div>
-            <div id="workouts-list" class="space-y-4"></div>
-        </div>
-
-        <!-- BARRA DE NAVEGAÇÃO -->
-        <nav id="main-nav" class="nav-bar" style="display: none;">
-            <div id="nav-home" class="nav-item active" onclick="navigate('screen-home', this)"><i class="fas fa-house"></i><span>Início</span></div>
-            <div id="nav-diet" class="nav-item" onclick="navigate('screen-diet', this)"><i class="fas fa-utensils"></i><span>Dieta</span></div>
-            <div id="nav-workout" class="nav-item" onclick="navigate('screen-workout', this)"><i class="fas fa-bolt"></i><span>Treino</span></div>
-            <div id="nav-reais" class="nav-item" onclick="navigate('screen-reais', this)"><i class="fas fa-wallet"></i><span>Finanças</span></div>
-        </nav>
-
-    </div>
-
-    <!-- MODAL DE ENTRADA -->
-    <div id="custom-modal">
-        <div class="glass-card p-6 w-full max-w-sm" style="max-height: 90vh; overflow-y: auto;">
-            <h3 id="modal-title" class="text-xl font-black mb-6 uppercase italic text-center">ADICIONAR</h3>
-            
-            <div id="img-container" class="img-preview" onclick="triggerFileUpload()">
-                <div id="img-placeholder" class="text-center text-slate-500">
-                    <i class="fas fa-camera text-2xl mb-2"></i>
-                    <p class="text-[9px] font-black uppercase">Tirar Foto / Galeria</p>
-                </div>
-            </div>
-            <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleFile(this)">
-
-            <div class="space-y-4 mb-8">
-                <div>
-                    <label id="label-name-type" class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Nome</label>
-                    <input type="text" id="modal-name" placeholder="Ex: Almoço ou Cardio" class="text-sm">
-                </div>
-                <!-- VOLUME PARA TREINOS -->
-                <div id="modal-sets-container">
-                    <label class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Volume (Séries x Reps)</label>
-                    <input type="text" id="modal-sets" placeholder="Ex: 3x12 ou 30 min" class="text-sm">
-                </div>
-                <div>
-                    <label id="modal-label" class="text-[10px] font-black text-slate-500 uppercase mb-2 block">Calorias (Kcal)</label>
-                    <input type="number" id="modal-input" placeholder="Ex: 450" class="text-sm">
-                </div>
-            </div>
-
-            <div class="flex gap-3">
-                <button onclick="closeModal()" class="flex-1 py-4 bg-slate-800 rounded-xl font-black text-[10px] uppercase">Cancelar</button>
-                <button onclick="confirmAdd()" class="flex-1 py-4 btn-gradient text-[10px]">Confirmar</button>
-            </div>
-        </div>
-    </div>
+        <button class="btn-principal" style="background: transparent; border: 2px solid white; margin-top: 50px; padding: 10px 30px; font-size: 1rem;" onclick="location.reload()">Sair do Perfil</button>
+    </section>
 
     <script>
-        let userData = { weight: 80, height: 175, limit: 1800, consumed: 0, goal: 'perder' };
-        let currentModalType = '';
-        let currentImgBase64 = '';
+        let nomeGlobal = "";
+        let imcGlobal = "";
+        let totalCalorias = 0;
+        let aguaMetaML = 2000;
+        let aguaAtualML = 0;
 
-        function navigate(id, el) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(el) {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                el.classList.add('active');
+        const svgCopinho = `
+            <svg viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 20 L80 20 L70 130 L30 130 Z" fill="#00ffff" stroke="white" stroke-width="5"/>
+                <rect x="25" y="30" width="50" height="10" fill="rgba(255,255,255,0.3)"/>
+            </svg>
+        `;
+
+        function navegar(idSeçao) {
+            document.querySelectorAll('.page-section').forEach(s => s.classList.add('hidden'));
+            const secao = document.getElementById(idSeçao);
+            if (secao) secao.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function abrirSubPagina(idSub, btn) {
+            document.querySelectorAll('.sub-pagina').forEach(p => p.classList.add('hidden'));
+            document.getElementById(idSub).classList.remove('hidden');
+            
+            document.querySelectorAll('.btn-icone').forEach(b => b.classList.remove('ativo'));
+            btn.classList.add('ativo');
+        }
+
+        function validarInicio() {
+            const nomeInput = document.getElementById('nomeUsuario').value.trim();
+            if (nomeInput !== "") {
+                nomeGlobal = nomeInput;
+                document.getElementById('tituloAvaliacao').innerText = nomeGlobal + ", vamos calcular o seu IMC";
+                navegar('avaliacao');
+            } else {
+                alert("Por favor, introduza o seu nome.");
             }
-            const isMainScreen = ['screen-home', 'screen-diet', 'screen-reais', 'screen-workout'].includes(id);
-            document.getElementById('main-nav').style.display = isMainScreen ? 'flex' : 'none';
-            updateUI();
         }
 
-        function selectGoal(el, goal) {
-            document.querySelectorAll('.objective-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            userData.goal = goal;
-            calcIMC();
-        }
+        function processarIMC() {
+            const pesoInput = document.getElementById('peso').value.trim();
+            let alturaInput = document.getElementById('altura').value.trim();
 
-        function calcIMC() {
-            const w = parseFloat(document.getElementById('weight').value) || 0;
-            const h = parseFloat(document.getElementById('height').value) / 100 || 1;
-            const imc = (w / (h * h)).toFixed(1);
-            document.getElementById('imc-val').innerText = imc;
-            document.getElementById('dash-imc').innerText = imc;
+            const peso = parseFloat(pesoInput.replace(',', '.'));
+            let altura = parseFloat(alturaInput.replace(',', '.'));
+
+            if (isNaN(peso) || isNaN(altura) || peso <= 0 || altura <= 0) {
+                alert("Por favor, insira valores válidos para Peso e Altura.");
+                return;
+            }
+
+            if (altura > 3) {
+                altura = altura / 100;
+            }
+
+            const imc = peso / (altura * altura);
+            const imcTexto = imc.toFixed(1);
+            imcGlobal = imcTexto;
+
+            let categoria = "";
+            let faixaId = "";
+
+            if (imc < 18.5) {
+                categoria = "Abaixo do peso";
+                faixaId = "faixa-1";
+            } else if (imc < 25) {
+                categoria = "Peso Normal";
+                faixaId = "faixa-2";
+            } else if (imc < 30) {
+                categoria = "Sobrepeso";
+                faixaId = "faixa-3";
+            } else if (imc < 35) {
+                categoria = "Obesidade Grau I";
+                faixaId = "faixa-4";
+            } else if (imc < 40) {
+                categoria = "Obesidade Grau II";
+                faixaId = "faixa-5";
+            } else {
+                categoria = "Obesidade Grau III";
+                faixaId = "faixa-6";
+            }
+
+            const boxResultado = document.getElementById('boxResultado');
+            const txtIMC = document.getElementById('txtIMC');
+            boxResultado.classList.remove('hidden');
             
-            let status = "NORMAL";
-            if(imc < 18.5) status = "ABAIXO";
-            else if(imc < 25) status = "IDEAL";
-            else if(imc < 30) status = "EXCESSO PESO";
-            else status = "OBESIDADE";
+            txtIMC.innerHTML = `Olá <strong>${nomeGlobal}</strong>!<br>O seu IMC é <strong>${imcTexto}</strong><br>Classificação: <span style="color:cyan; font-weight:bold;">${categoria}</span>`;
+
+            for (let i = 1; i <= 6; i++) {
+                const el = document.getElementById('faixa-' + i);
+                if (el) el.classList.remove('row-highlight');
+            }
+            const elDestaque = document.getElementById(faixaId);
+            if (elDestaque) elDestaque.classList.add('row-highlight');
+
+            document.getElementById('msgObjetivo').innerText = `${nomeGlobal}, agora que sabemos o seu IMC (${imcTexto}), qual é o seu foco principal?`;
+
+            setTimeout(() => {
+                boxResultado.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+
+        function finalizarObjetivo(foco) {
+            gerarRecomendacoes(foco);
+            configurarAgua(foco);
+            document.getElementById('boasVindasDash').innerHTML = `Bem-vindo, <strong>${nomeGlobal}</strong>! Explore as funções abaixo para monitorar sua evolução.`;
+            navegar('dashboard');
+        }
+
+        function configurarAgua(foco) {
+            if (foco === 'massa') aguaMetaML = 3500;
+            else if (foco === 'perda') aguaMetaML = 2500;
+            else aguaMetaML = 2000;
+
+            document.getElementById('txtMetaAgua').innerText = `Meta: ${aguaMetaML}ml`;
             
-            document.getElementById('imc-status').innerText = status;
-            userData.limit = userData.goal === 'perder' ? 1800 : 2500;
-            document.getElementById('dash-limit').innerText = userData.limit;
-            updateUI();
+            const numCopos = Math.ceil(aguaMetaML / 250);
+            const grid = document.getElementById('gridCopinhos');
+            grid.innerHTML = "";
+
+            for (let i = 1; i <= numCopos; i++) {
+                const copoDiv = document.createElement('div');
+                copoDiv.className = 'copinho';
+                copoDiv.innerHTML = svgCopinho;
+                copoDiv.onclick = () => alternarCopo(i);
+                copoDiv.id = `copo-${i}`;
+                grid.appendChild(copoDiv);
+            }
         }
 
-        function finishSetup() {
-            calcIMC();
-            navigate('screen-home');
-        }
-
-        function updateFinance() {
-            const g = parseFloat(document.getElementById('gym-val').value) || 0;
-            const d = parseFloat(document.getElementById('diet-val').value) || 0;
-            const total = (g + d).toFixed(2).replace('.', ',') + " €";
-            document.getElementById('dash-money').innerText = total;
-            document.getElementById('reais-total-display').innerText = total;
-        }
-
-        function triggerFileUpload() { document.getElementById('file-input').click(); }
-
-        function handleFile(input) {
-            const file = input.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    currentImgBase64 = e.target.result;
-                    const preview = document.getElementById('img-container');
-                    preview.style.backgroundImage = `url(${currentImgBase64})`;
-                    document.getElementById('img-placeholder').style.display = 'none';
+        function alternarCopo(index) {
+            const copo = document.getElementById(`copo-${index}`);
+            const estaCheio = copo.classList.contains('cheio');
+            
+            if (!estaCheio) {
+                for(let i=1; i<=index; i++){
+                    document.getElementById(`copo-${i}`).classList.add('cheio');
                 }
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function showAddModal(type) {
-            currentModalType = type;
-            currentImgBase64 = '';
-            document.getElementById('modal-title').innerText = "ADICIONAR " + type.toUpperCase();
-            document.getElementById('modal-label').innerText = type === 'refeição' ? "CALORIAS CONSUMIDAS" : "CALORIAS QUEIMADAS";
-            document.getElementById('label-name-type').innerText = type === 'refeição' ? "NOME DA REFEIÇÃO" : "NOME DO EXERCÍCIO";
-            
-            if(type === 'refeição') {
-                document.getElementById('modal-name').placeholder = "Ex: Pequeno-almoço, Batido, Massa";
-                document.getElementById('modal-sets-container').style.display = 'none';
             } else {
-                document.getElementById('modal-name').placeholder = "Ex: Cardio, Supino, Corrida";
-                document.getElementById('modal-sets-container').style.display = 'block';
+                const grid = document.getElementById('gridCopinhos');
+                const total = grid.children.length;
+                for(let i=index; i<=total; i++){
+                    document.getElementById(`copo-${i}`).classList.remove('cheio');
+                }
             }
-
-            document.getElementById('modal-name').value = "";
-            document.getElementById('modal-sets').value = "";
-            document.getElementById('modal-input').value = "";
             
-            const preview = document.getElementById('img-container');
-            preview.style.backgroundImage = 'none';
-            document.getElementById('img-placeholder').style.display = 'block';
-            
-            document.getElementById('custom-modal').style.display = 'flex';
+            const cheios = document.querySelectorAll('.copinho.cheio').length;
+            aguaAtualML = cheios * 250;
+            document.getElementById('txtAguaAtual').innerText = `${aguaAtualML}ml consumidos`;
         }
 
-        function closeModal() { document.getElementById('custom-modal').style.display = 'none'; }
+        // Sugestões Melhoradas
+        function gerarRecomendacoes(objetivo) {
+            const tList = document.getElementById("lista-treinos");
+            const cList = document.getElementById("lista-comidas");
+            const titulo = document.getElementById("tituloRecomendacao");
 
-        function confirmAdd() {
-            const val = parseInt(document.getElementById('modal-input').value);
-            const name = document.getElementById('modal-name').value || (currentModalType === 'refeição' ? "Refeição" : "Exercício");
-            const sets = document.getElementById('modal-sets').value;
-            
-            if(!val || isNaN(val)) return;
+            tList.innerHTML = "";
+            cList.innerHTML = "";
 
-            if(currentModalType === 'refeição') {
-                userData.consumed += val;
-                addToList('refeicoes-list', name, val, 'orange', currentImgBase64, null);
+            if (objetivo === 'massa') {
+                titulo.innerText = "Foco: Ganho de Massa Muscular";
+                tList.innerHTML = `
+                    <li><strong>Treino de Força:</strong> Priorize exercícios multiarticulares (agachamento, supino, levantamento terra) com cargas progressivas.</li>
+                    <li><strong>Volume:</strong> Realize de 3 a 5 séries de 8 a 12 repetições para maximizar a hipertrofia.</li>
+                    <li><strong>Descanso:</strong> Dê intervalos de 60 a 90 segundos entre as séries para recuperação energética.</li>
+                `;
+                cList.innerHTML = `
+                    <li><strong>Superávit Calórico:</strong> Consuma cerca de 300 a 500 calorias acima do seu gasto diário.</li>
+                    <li><strong>Proteína de Alto Valor:</strong> Meta de 1.8g a 2.2g de proteína por kg de peso (ovos, frango, carne magra, whey).</li>
+                    <li><strong>Carboidratos Complexos:</strong> São seu combustível; não tenha medo de arroz, batata doce e aveia.</li>
+                `;
+            } else if (objetivo === 'perda') {
+                titulo.innerText = "Foco: Perda de Gordura";
+                tList.innerHTML = `
+                    <li><strong>Metabolismo Acelerado:</strong> Combine musculação (para manter massa magra) com cardios curtos e intensos (HIIT).</li>
+                    <li><strong>Frequência:</strong> Tente se manter ativo pelo menos 5 dias na semana, mesmo que com caminhadas leves.</li>
+                    <li><strong>NEAT:</strong> Aumente suas atividades não ligadas ao treino (use escadas, caminhe mais).</li>
+                `;
+                cList.innerHTML = `
+                    <li><strong>Déficit Calórico:</strong> A regra de ouro; consuma menos do que gasta, priorizando densidade nutricional.</li>
+                    <li><strong>Saciedade:</strong> Aumente drasticamente o consumo de fibras (vegetais verdes e legumes) para controlar a fome.</li>
+                    <li><strong>Proteína Estratégica:</strong> Ajuda a preservar seus músculos enquanto a gordura é queimada.</li>
+                `;
             } else {
-                userData.consumed -= val;
-                addToList('workouts-list', name, val, 'purple', currentImgBase64, sets);
-            }
-
-            updateUI();
-            closeModal();
-        }
-
-        function addToList(listId, title, val, color, img, sets) {
-            const list = document.getElementById(listId);
-            const item = document.createElement('div');
-            item.className = "glass-card p-4 flex items-center gap-4 animate-fadeIn";
-            
-            const imgHtml = img ? `<img src="${img}" class="item-img shadow-lg">` : 
-                `<div class="item-img flex items-center justify-center bg-slate-800 text-slate-600"><i class="fas fa-image"></i></div>`;
-            
-            const subTitleHtml = sets ? `<p class="text-[10px] font-black text-purple-400 uppercase tracking-tighter mt-1">${sets}</p>` : '';
-
-            item.innerHTML = `
-                ${imgHtml}
-                <div class="flex-1">
-                    <p class="text-[10px] font-black uppercase text-slate-500 mb-1">${listId === 'refeicoes-list' ? 'Nutrição' : 'Performance'}</p>
-                    <h4 class="font-black text-sm uppercase italic leading-tight">${title}</h4>
-                    ${subTitleHtml}
-                </div>
-                <div class="text-right">
-                    <span class="text-${color}-400 font-black text-sm">${listId === 'refeicoes-list' ? '+' : '-'}${val}</span>
-                    <p class="text-[8px] font-bold text-slate-600 uppercase">KCAL</p>
-                </div>
-            `;
-            list.prepend(item);
-        }
-
-        function updateUI() {
-            document.getElementById('dash-consumed').innerText = userData.consumed;
-            const perc = Math.max(0, Math.min((userData.consumed / userData.limit) * 100, 100));
-            document.getElementById('progress-kcal').style.width = perc + "%";
-            document.getElementById('kcal-perc-text').innerText = Math.round(perc) + "%";
-            
-            if(perc >= 100) {
-                document.getElementById('kcal-perc-text').classList.add('text-red-500');
-                document.getElementById('kcal-perc-text').innerText = "LIMITE ALCANÇADO";
-            } else {
-                document.getElementById('kcal-perc-text').classList.remove('text-red-500');
+                titulo.innerText = "Foco: Longevidade e Equilíbrio";
+                tList.innerHTML = `
+                    <li><strong>Funcionalidade:</strong> Pratique atividades que melhorem flexibilidade e postura (Yoga ou Pilates).</li>
+                    <li><strong>Saúde Cardiovascular:</strong> 150 minutos de atividade moderada por semana é o ideal recomendado pela OMS.</li>
+                    <li><strong>Consistência:</strong> O melhor treino é aquele que você consegue manter a longo prazo sem lesões.</li>
+                `;
+                cList.innerHTML = `
+                    <li><strong>Dieta Mediterrânea:</strong> Rica em gorduras boas (azeite, abacate, castanhas) e alimentos naturais.</li>
+                    <li><strong>Micro Nutrientes:</strong> Varie as cores do seu prato para garantir todas as vitaminas necessárias.</li>
+                    <li><strong>Regra 80/20:</strong> Mantenha 80% de alimentação limpa e 20% para prazeres moderados.</li>
+                `;
             }
         }
 
-        window.onload = () => {
-            calcIMC();
-            updateFinance();
-        };
+        function registrarItem(tipo) {
+            const input = tipo === 'Alimento' ? document.getElementById('inputAlimento') : document.getElementById('inputTreino');
+            const logArea = tipo === 'Alimento' ? document.getElementById('logAlimentos') : document.getElementById('logTreinos');
+            
+            if (input.value.trim() === "") return;
+
+            let calValue = 0;
+            let imgUrl = null;
+
+            if (tipo === 'Alimento') {
+                const calInput = document.getElementById('inputCalItem');
+                calValue = parseInt(calInput.value) || 0;
+                totalCalorias += calValue;
+                document.getElementById('valorCalorias').innerText = totalCalorias;
+                
+                const fotoInput = document.getElementById('inputFotoPrato');
+                if (fotoInput.files && fotoInput.files[0]) {
+                    imgUrl = URL.createObjectURL(fotoInput.files[0]);
+                }
+                
+                calInput.value = "";
+                fotoInput.value = "";
+            }
+
+            const div = document.createElement('div');
+            div.className = 'log-item';
+            const agora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const header = document.createElement('div');
+            header.className = 'log-header';
+            
+            let textoDestaque = `<strong>[${agora}]</strong> ${input.value}`;
+            if (tipo === 'Alimento' && calValue > 0) {
+                textoDestaque = `<strong>[${agora}]</strong> <span style="color:cyan">${calValue} kcal</span> - ${input.value}`;
+            }
+
+            header.innerHTML = `<span>${textoDestaque}</span>`;
+            div.appendChild(header);
+
+            if (imgUrl) {
+                const img = document.createElement('img');
+                img.src = imgUrl;
+                img.className = 'img-prato';
+                div.appendChild(img);
+            }
+
+            logArea.prepend(div);
+            input.value = "";
+        }
     </script>
 </body>
 </html>
